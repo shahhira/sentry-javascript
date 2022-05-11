@@ -21,8 +21,6 @@ import {
   updateRateLimits,
 } from '@sentry/utils';
 
-import { IS_DEBUG_BUILD } from '../flags';
-
 export const DEFAULT_TRANSPORT_BUFFER_SIZE = 30;
 
 /**
@@ -76,7 +74,7 @@ export function createTransport(
           }
         },
         error => {
-          IS_DEBUG_BUILD && logger.error('Failed while recording event:', error);
+          __DEBUG_BUILD__ && logger.error('Failed while recording event:', error);
           recordEnvelopeLoss('network_error');
         },
       );
@@ -85,7 +83,7 @@ export function createTransport(
       result => result,
       error => {
         if (error instanceof SentryError) {
-          IS_DEBUG_BUILD && logger.error('Skipped sending event due to full buffer');
+          __DEBUG_BUILD__ && logger.error('Skipped sending event due to full buffer');
           recordEnvelopeLoss('queue_overflow');
           return resolvedSyncPromise();
         } else {

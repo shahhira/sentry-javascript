@@ -29,7 +29,6 @@ import {
   uuid4,
 } from '@sentry/utils';
 
-import { IS_DEBUG_BUILD } from './flags';
 import { Scope } from './scope';
 import { Session } from './session';
 
@@ -355,7 +354,7 @@ export class Hub implements HubInterface {
     try {
       return client.getIntegration(integration);
     } catch (_oO) {
-      IS_DEBUG_BUILD && logger.warn(`Cannot retrieve integration ${integration.id} from the current Hub`);
+      __DEBUG_BUILD__ && logger.warn(`Cannot retrieve integration ${integration.id} from the current Hub`);
       return null;
     }
   }
@@ -478,7 +477,7 @@ export class Hub implements HubInterface {
     if (sentry && sentry.extensions && typeof sentry.extensions[method] === 'function') {
       return sentry.extensions[method].apply(this, args);
     }
-    IS_DEBUG_BUILD && logger.warn(`Extension method ${method} couldn't be found, doing nothing.`);
+    __DEBUG_BUILD__ && logger.warn(`Extension method ${method} couldn't be found, doing nothing.`);
   }
 }
 

@@ -28,7 +28,6 @@ import {
   SyncPromise,
 } from '@sentry/utils';
 
-import { IS_DEBUG_BUILD } from './flags';
 import { Session } from './session';
 
 /**
@@ -471,7 +470,7 @@ export class Scope implements ScopeInterface {
       } else {
         const result = processor({ ...event }, hint) as Event | null;
 
-        IS_DEBUG_BUILD &&
+        __DEBUG_BUILD__ &&
           processor.id &&
           result === null &&
           logger.log(`Event processor "${processor.id}" dropped event`);

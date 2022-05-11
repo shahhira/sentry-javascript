@@ -1,7 +1,6 @@
 import { captureException, flush, getCurrentHub, startTransaction } from '@sentry/node';
 import { logger } from '@sentry/utils';
 
-import { IS_DEBUG_BUILD } from '../flags';
 import { domainify, getActiveDomain, proxyFunction } from '../utils';
 import { configureScopeWithContext, EventFunction, EventFunctionWithCallback, WrapperOptions } from './general';
 
@@ -60,7 +59,7 @@ function _wrapEventFunction(
           callback(...args);
         })
         .then(null, e => {
-          IS_DEBUG_BUILD && logger.error(e);
+          __DEBUG_BUILD__ && logger.error(e);
         });
     });
 

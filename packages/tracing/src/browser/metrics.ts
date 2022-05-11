@@ -3,7 +3,6 @@
 import { Measurements, SpanContext } from '@sentry/types';
 import { browserPerformanceTimeOrigin, getGlobalObject, htmlTreeAsString, isNodeEnv, logger } from '@sentry/utils';
 
-import { IS_DEBUG_BUILD } from '../flags';
 import { Span } from '../span';
 import { Transaction } from '../transaction';
 import { msToSec } from '../utils';
@@ -42,7 +41,7 @@ export class MetricsInstrumentation {
       return;
     }
 
-    IS_DEBUG_BUILD && logger.log('[Tracing] Adding & adjusting spans using Performance API');
+    __DEBUG_BUILD__ && logger.log('[Tracing] Adding & adjusting spans using Performance API');
 
     const timeOrigin = msToSec(browserPerformanceTimeOrigin);
 
@@ -78,13 +77,13 @@ export class MetricsInstrumentation {
             const shouldRecord = entry.startTime < firstHidden.firstHiddenTime;
 
             if (entry.name === 'first-paint' && shouldRecord) {
-              IS_DEBUG_BUILD && logger.log('[Measurements] Adding FP');
+              __DEBUG_BUILD__ && logger.log('[Measurements] Adding FP');
               this._measurements['fp'] = { value: entry.startTime, unit: 'millisecond' };
               this._measurements['mark.fp'] = { value: startTimestamp, unit: 'second' };
             }
 
             if (entry.name === 'first-contentful-paint' && shouldRecord) {
-              IS_DEBUG_BUILD && logger.log('[Measurements] Adding FCP');
+              __DEBUG_BUILD__ && logger.log('[Measurements] Adding FCP');
               this._measurements['fcp'] = { value: entry.startTime, unit: 'millisecond' };
               this._measurements['mark.fcp'] = { value: startTimestamp, unit: 'second' };
             }
@@ -114,7 +113,7 @@ export class MetricsInstrumentation {
       // Generate TTFB (Time to First Byte), which measured as the time between the beginning of the transaction and the
       // start of the response in milliseconds
       if (typeof responseStartTimestamp === 'number') {
-        IS_DEBUG_BUILD && logger.log('[Measurements] Adding TTFB');
+        __DEBUG_BUILD__ && logger.log('[Measurements] Adding TTFB');
         this._measurements['ttfb'] = {
           value: (responseStartTimestamp - transaction.startTimestamp) * 1000,
           unit: 'millisecond',
@@ -145,7 +144,7 @@ export class MetricsInstrumentation {
         const normalizedValue = Math.abs((measurementTimestamp - transaction.startTimestamp) * 1000);
 
         const delta = normalizedValue - oldValue;
-        IS_DEBUG_BUILD &&
+        __DEBUG_BUILD__ &&
           logger.log(`[Measurements] Normalized ${name} from ${oldValue} to ${normalizedValue} (${delta})`);
 
         this._measurements[name].value = normalizedValue;
@@ -230,7 +229,7 @@ export class MetricsInstrumentation {
         return;
       }
 
-      IS_DEBUG_BUILD && logger.log('[Measurements] Adding CLS');
+      __DEBUG_BUILD__ && logger.log('[Measurements] Adding CLS');
       this._measurements['cls'] = { value: metric.value, unit: 'millisecond' };
       this._clsEntry = entry as LayoutShift;
     });
@@ -246,7 +245,7 @@ export class MetricsInstrumentation {
 
       const timeOrigin = msToSec(browserPerformanceTimeOrigin as number);
       const startTime = msToSec(entry.startTime);
-      IS_DEBUG_BUILD && logger.log('[Measurements] Adding LCP');
+      __DEBUG_BUILD__ && logger.log('[Measurements] Adding LCP');
       this._measurements['lcp'] = { value: metric.value, unit: 'millisecond' };
       this._measurements['mark.lcp'] = { value: timeOrigin + startTime, unit: 'second' };
       this._lcpEntry = entry as LargestContentfulPaint;
@@ -263,7 +262,7 @@ export class MetricsInstrumentation {
 
       const timeOrigin = msToSec(browserPerformanceTimeOrigin as number);
       const startTime = msToSec(entry.startTime);
-      IS_DEBUG_BUILD && logger.log('[Measurements] Adding FID');
+      __DEBUG_BUILD__ && logger.log('[Measurements] Adding FID');
       this._measurements['fid'] = { value: metric.value, unit: 'millisecond' };
       this._measurements['mark.fid'] = { value: timeOrigin + startTime, unit: 'second' };
     });
@@ -416,7 +415,7 @@ function tagMetricInfo(
   clsEntry: MetricsInstrumentation['_clsEntry'],
 ): void {
   if (lcpEntry) {
-    IS_DEBUG_BUILD && logger.log('[Measurements] Adding LCP Data');
+    __DEBUG_BUILD__ && logger.log('[Measurements] Adding LCP Data');
 
     // Capture Properties of the LCP element that contributes to the LCP.
 
@@ -438,7 +437,7 @@ function tagMetricInfo(
 
   // See: https://developer.mozilla.org/en-US/docs/Web/API/LayoutShift
   if (clsEntry && clsEntry.sources) {
-    IS_DEBUG_BUILD && logger.log('[Measurements] Adding CLS Data');
+    __DEBUG_BUILD__ && logger.log('[Measurements] Adding CLS Data');
     clsEntry.sources.forEach((source, index) =>
       transaction.setTag(`cls.source.${index + 1}`, htmlTreeAsString(source.node)),
     );

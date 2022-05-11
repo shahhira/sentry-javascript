@@ -14,6 +14,7 @@ import {
   makeRemoveBlankLinesPlugin,
   makeRemoveESLintCommentsPlugin,
   makeSucrasePlugin,
+  makeDebugBuildStatementReplacePlugin,
 } from './plugins/index.js';
 
 const packageDotJSON = require(path.resolve(process.cwd(), './package.json'));
@@ -32,6 +33,7 @@ export function makeBaseNPMConfig(options = {}) {
   const removeESLintCommentsPlugin = makeRemoveESLintCommentsPlugin();
   const removeBlankLinesPlugin = makeRemoveBlankLinesPlugin();
   const extractPolyfillsPlugin = makeExtractPolyfillsPlugin();
+  const debugBuildStatementReplacePlugin = makeDebugBuildStatementReplacePlugin();
 
   return {
     input: entrypoints,
@@ -83,6 +85,7 @@ export function makeBaseNPMConfig(options = {}) {
       removeESLintCommentsPlugin,
       removeBlankLinesPlugin,
       extractPolyfillsPlugin,
+      debugBuildStatementReplacePlugin,
     ],
 
     // don't include imported modules from outside the package in the final output
