@@ -1,4 +1,5 @@
 import {
+  BaggageObj,
   DsnComponents,
   Event,
   EventEnvelope,
@@ -12,7 +13,6 @@ import {
   SessionItem,
 } from '@sentry/types';
 import {
-  BaggageObj,
   createBaggage,
   createEnvelope,
   dropUndefinedKeys,
